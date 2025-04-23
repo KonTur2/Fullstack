@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS
 import sqlite3
 from config import DB_PATH
 
 app = Flask(__name__)
+CORS(app)
 
 # Подключение к базе данных
 def get_db_connection():
@@ -38,11 +40,6 @@ def reports_page():
 # Страница настроек
 @app.route('/settings')
 def settings_page():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # cursor.execute('SELECT * FROM reader')
-    # readers = cursor.fetchall()
-    conn.close()
     return render_template('settings.html')
 
 ###############################################################################################
@@ -138,6 +135,50 @@ def add_reader():
             "message": "Читатель успешно зарегистрирован",
             "readerId": reader_id
         }), 201
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/readers/search', methods=['GET'])
+def search_readers():
+    try:
+        search_query = request.args.get('query')
+        
+        if not search_query:
+            return jsonify({"error": "Не указана строка для поиска"}), 400
+        
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Ищем в любом из полей: first_name, last_name, patronymic, contact
+        cursor.execute('''
+            SELECT * FROM reader 
+            WHERE first_name LIKE ? 
+               OR last_name LIKE ? 
+               OR patronymic LIKE ? 
+               OR contact LIKE ?
+        ''', [f"%{search_query}%"] * 4)
+        
+        readers = cursor.fetchall()
+        conn.close()
+        
+        readers_list = []
+        for reader in readers:
+            readers_list.append({
+                "id": reader[0],
+                "firstName": reader[1],
+                "lastName": reader[2],
+                "patronymic": reader[3],
+                "birthdate": reader[4],
+                "phone": reader[5]
+            })
+        
+        return jsonify({
+            "success": True,
+            "readers": readers_list,
+            "count": len(readers_list)
+        }), 200
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
