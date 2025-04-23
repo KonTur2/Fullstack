@@ -4,29 +4,65 @@ document.addEventListener('DOMContentLoaded', function() {
     loadNotifications();
 });
 
-// Загрузка показателей
+// Загрузка показателей с реальными данными
 function loadMetrics() {
-    // В реальном приложении здесь будет AJAX запрос
-    const metrics = [
-        { title: 'Всего книг в фонде', value: '12 458', class: 'primary' },
-        { title: 'Книг в наличии', value: '8 742', class: 'success' },
-        { title: 'На руках у читателей', value: '3 216', class: 'info' },
-        { title: 'Требуют списания', value: '327', class: 'warning' },
-        { title: 'Новые поступления', value: '173', class: 'danger' }
-    ];
-
     const metricsContainer = document.querySelector('.metrics');
-    metricsContainer.innerHTML = '';
-
-    metrics.forEach(metric => {
-        const metricCard = document.createElement('div');
-        metricCard.className = `metric-card ${metric.class}`;
-        metricCard.innerHTML = `
-            <div class="metric-title">${metric.title}</div>
-            <div class="metric-value">${metric.value}</div>
+    
+    // Показываем заглушку загрузки
+    metricsContainer.innerHTML = `
+        <div class="metric-loading">
+            <div class="loading-spinner"></div>
+            <span>Загрузка данных...</span>
+        </div>
+    `;
+    
+    // Делаем AJAX-запрос к API
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/metrics', true);
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            try {
+                const metrics = JSON.parse(xhr.responseText);
+                renderMetrics(metrics);
+            } catch (e) {
+                showMetricsError('Ошибка обработки данных');
+            }
+        } else {
+            showMetricsError('Ошибка сервера: ' + xhr.status);
+        }
+    };
+    
+    xhr.onerror = function() {
+        showMetricsError('Ошибка соединения');
+    };
+    
+    xhr.send();
+    
+    // Функция отрисовки метрик
+    function renderMetrics(metrics) {
+        metricsContainer.innerHTML = '';
+        
+        metrics.forEach(metric => {
+            const metricCard = document.createElement('div');
+            metricCard.className = `metric-card ${metric.class}`;
+            metricCard.innerHTML = `
+                <div class="metric-title">${metric.title}</div>
+                <div class="metric-value">${metric.value}</div>
+            `;
+            metricsContainer.appendChild(metricCard);
+        });
+    }
+    
+    // Функция показа ошибки
+    function showMetricsError(message) {
+        metricsContainer.innerHTML = `
+            <div class="metric-error">
+                ${message}
+                <button onclick="loadMetrics()">⟳ Обновить</button>
+            </div>
         `;
-        metricsContainer.appendChild(metricCard);
-    });
+    }
 }
 
 // Загрузка уведомлений
