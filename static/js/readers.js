@@ -17,13 +17,11 @@ function saveReader() {
 
     const reader = {
         id: Date.now(),
-        fullName: document.getElementById('full-name').value,
-        ticketNumber: document.getElementById('ticket-number').value,
+        firstName: document.getElementById('first-name').value,
+        lastName: document.getElementById('last-name').value,
         phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
+        patronymic: document.getElementById('patronymic').value,
         birthdate: document.getElementById('birthdate').value,
-        address: document.getElementById('address').value,
-        notes: document.getElementById('notes').value
     };
 
     // В реальном приложении здесь будет AJAX запрос
@@ -34,13 +32,11 @@ function saveReader() {
 
 // Сброс формы читателя
 function resetReaderForm() {
-    document.getElementById('full-name').value = '';
-    document.getElementById('ticket-number').value = '';
+    document.getElementById('first-name').value = '';
+    document.getElementById('last-name').value = '';
     document.getElementById('phone').value = '';
-    document.getElementById('email').value = '';
+    document.getElementById('patronymic').value = '';
     document.getElementById('birthdate').value = '';
-    document.getElementById('address').value = '';
-    document.getElementById('notes').value = '';
 }
 
 // Поиск читателей
