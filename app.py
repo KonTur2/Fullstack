@@ -142,5 +142,72 @@ def add_reader():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/books', methods=['GET'])
+def get_books():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        sort_by = request.args.get('sort_by', 'title')  # по какому полю сортировать
+        order = request.args.get('order', 'asc')  # порядок сортировки
+        limit = request.args.get('limit', 50)  # сколько книг вернуть
+        offset = request.args.get('offset', 0)  # с какой позиции начать
+
+        query = f'''
+            SELECT * FROM book
+            ORDER BY {sort_by} {order.upper()}
+            LIMIT ? OFFSET ?
+        '''
+        cursor.execute(query, (limit, offset))
+        books = [dict(row) for row in cursor.fetchall()]
+        return jsonify(books)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        conn.close()
+
+@app.route('/api/books', methods=['POST'])
+def add_book():
+    try:
+        data = request.get_json()
+
+        # Проверка обязательных полей
+        required_fields = ['title', 'author', 'quantity']
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Не заполнены обязательные поля"}), 400
+
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        # Вставка новой книги
+        cursor.execute('''
+            INSERT INTO book (title, author, year, genre, quantity)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (
+            data['title'],
+            data['author'],
+            data.get('year', None),
+            data.get('genre', ''),
+            data['quantity']
+        ))
+
+        conn.commit()
+        book_id = cursor.lastrowid
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "message": "Книга успешно добавлена",
+            "bookId": book_id
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+
