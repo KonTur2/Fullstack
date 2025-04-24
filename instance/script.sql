@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `genre` (
 -- Book table
 CREATE TABLE IF NOT EXISTS `book` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `picture` TEXT;
   `name` VARCHAR(250),
   `year` VARCHAR(10),
   `quantity` INTEGER,
@@ -104,4 +105,11 @@ CREATE TABLE IF NOT EXISTS `given_book` (
   FOREIGN KEY (`reader_id`) REFERENCES `reader` (`id`),
   FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `sistem_settings` (
+  `standard_rental_period` INTEGER NOT NULL,
+  `max_books_per_reader` INTEGER NOT NULL,
+  `late_return_penalty` INTEGER NOT NULL,
+  PRIMARY KEY (standard_rental_period, max_books_on_reader, late refund penalty)
 );
