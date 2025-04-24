@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `debiting_act` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `date` TIMESTAMP,
   `quantity` INTEGER,
-  `commentary` VARCHAR(249),
+  `commentary` VARCHAR(250),
   `book_id` INTEGER NOT NULL,
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
 );
@@ -86,6 +86,8 @@ CREATE TABLE IF NOT EXISTS `reader` (
   `last_name` VARCHAR(50),
   `patronymic` VARCHAR(50),
   `date_birth` TIMESTAMP,
+  `adress` VARCHAR(100),
+  `mail` VARCHAR(50),
   `contact` VARCHAR(250)
 );
 
