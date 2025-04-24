@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчеты | Твердый переплет</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="../static/css/reports.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Твердый переплет</span>
+                </h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/"><i class="fas fa-tachometer-alt"></i>Главная</a></li>
+                    <li><a href="/books"><i class="fas fa-book"></i>Каталог книг</a></li>
+                    <li><a href="/readers"><i class="fas fa-users"></i>Читатели</a></li>
+                    <li><a href="/transactions"><i class="fas fa-exchange-alt"></i>Выдачи/возвраты</a></li>
+                    <li><a href="/reports" class="active"><i class="fas fa-chart-bar"></i>Отчеты</a></li>
+                    <li><a href="/settings"><i class="fas fa-cog"></i>Настройки</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h1>Отчеты</h1>
+                <div class="user-menu">
+                    <div class="user-avatar">АБ</div>
+                </div>
+            </header>
+
+            <div class="form-container">
+                <h2 class="form-title">Формирование отчета</h2>
+
+                <div class="form-group">
+                    <label for="report-type">Тип отчета*</label>
+                    <select id="report-type" class="form-control" required>
+                        <option value="">Выберите тип отчета</option>
+                        <option value="all-books">Список всех книг</option>
+                        <option value="by-genre">Список книг по жанрам</option>
+                        <option value="by-author">Список книг по авторам</option>
+                        <option value="issued-books">Список книг на руках у читателей</option>
+                        <option value="write-off">Список книг, требующих списания</option>
+                        <option value="new-arrivals">Отчет о новых поступлениях за период</option>
+                        <option value="issue-return">Отчет о выданных и возвращенных книгах за период</option>
+                    </select>
+                </div>
+
+                <div class="form-row" id="period-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="start-date">Дата начала*</label>
+                        <input type="date" id="start-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">Дата окончания*</label>
+                        <input type="date" id="end-date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="resetReportForm()">Сбросить</button>
+                    <button class="btn btn-primary" onclick="generateReport()">Сформировать отчет</button>
+                </div>
+
+                <div class="export-options" id="export-options" style="display: none;">
+                    <span>Экспорт:</span>
+                    <button class="export-btn" onclick="exportReport('csv')">
+                        <i class="fas fa-file-csv"></i> CSV
+                    </button>
+                    <button class="export-btn" onclick="exportReport('excel')">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                    <button class="export-btn" onclick="exportReport('pdf')">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="export-btn" onclick="printReport()">
+                        <i class="fas fa-print"></i> Печать
+                    </button>
+                </div>
+            </div>
+
+            <div class="report-results" id="report-results" style="display: none;">
+                <h3 id="report-title">Отчет</h3>
+                <div id="report-content">
+                    <!-- Содержимое отчета будет загружено динамически -->
+                </div>
+            </div>
+
+            <!-- Графики (для некоторых отчетов) -->
+            <div class="charts-container" id="charts-container" style="display: none;">
+                <h3>Визуализация данных</h3>
+                <div class="chart-row">
+                    <div class="chart-container">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Подключаем Chart.js для графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../static/js/main.js"></script>
+    <script src="../static/js/reports.js"></script>
+</body>
+</html>
