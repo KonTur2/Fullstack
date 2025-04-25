@@ -1,23 +1,19 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import sqlite3
+import os
+from instance.fill_db import fill
 from config import DB_PATH
 
 app = Flask(__name__)
 CORS(app)
-
-# Подключение к базе данных
-def get_db_connection():
-    conn = sqlite3.connect('instance/sqlite.db')
-    conn.row_factory = sqlite3.Row 
-    return conn
 
 # Главная страница
 @app.route('/')
 def index():
     return render_template('/index.html')
 
-# Маршрут для получения списка всех книг
+# Страница книг
 @app.route('/books')
 def books_page():
     return render_template('books.html')
@@ -104,9 +100,10 @@ def get_metrics():
 def add_reader():
     try:
         data = request.get_json()
+        print(data)
         
         # Валидация данных
-        required_fields = ['firstName', 'lastName', 'phone']
+        required_fields = ['firstName', 'lastName', 'phone', 'address', 'email', 'birthdate']
         if not all(field in data for field in required_fields):
             return jsonify({"error": "Не заполнены обязательные поля"}), 400
         
@@ -116,14 +113,16 @@ def add_reader():
         # Вставка данных в БД
         cursor.execute('''
             INSERT INTO reader 
-            (first_name, last_name, patronymic, date_birth, contact) 
-            VALUES (?, ?, ?, ?, ?)
+            (first_name, last_name, patronymic, date_birth, phone, address, email) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
             data['firstName'],
             data['lastName'],
             data.get('patronymic', ''),
             data.get('birthdate', ''),
-            data['phone']
+            data['phone'],
+            data['address'],
+            data['email']
         ))
         
         conn.commit()
@@ -157,7 +156,7 @@ def search_readers():
             WHERE first_name LIKE ? 
                OR last_name LIKE ? 
                OR patronymic LIKE ? 
-               OR contact LIKE ?
+               OR phone LIKE ?
         ''', [f"%{search_query}%"] * 4)
         
         readers = cursor.fetchall()
@@ -171,7 +170,9 @@ def search_readers():
                 "lastName": reader[2],
                 "patronymic": reader[3],
                 "birthdate": reader[4],
-                "phone": reader[5]
+                "phone": reader[5],
+                "address": reader[6],
+                "email": reader[7],
             })
         
         return jsonify({
@@ -184,4 +185,6 @@ def search_readers():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
+    if not os.path.exists(DB_PATH):
+        fill()
     app.run(debug=True)

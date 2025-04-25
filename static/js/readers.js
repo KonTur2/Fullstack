@@ -13,21 +13,36 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Массив для хранения читателей (временное решение)
-let readers = [];
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Проверка параметров URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const action = urlParams.get('action');
-
-    if (action === 'search') {
-        document.querySelector('.tab[onclick*="search-reader"]').click();
-    }
-});
-
 // Сохранение читателя
 function saveReader() {
+    const birthdateStr = document.getElementById('birthdate').value;
+    if (!birthdateStr) {
+        alert("Пожалуйста, введите дату рождения");
+        return;
+    }
+
+    const birthdate = new Date(birthdateStr);
+    const today = new Date();
+
+    if (birthdate > today) {
+        alert("Дата рождения не может быть в будущем");
+        return;
+    }
+
+    const age = today.getFullYear() - birthdate.getFullYear();
+    const monthDiff = today.getMonth() - birthdate.getMonth();
+    const dayDiff = today.getDate() - birthdate.getDate();
+
+    const adjustedAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
+
+    if (adjustedAge < 5) {
+        alert("Читателю должно быть не менее 5 лет");
+        return;
+    } else if (adjustedAge > 100) {
+        alert("Вам 100 лет +, идите отдыхайте уже");
+    }
+
+
     if (!validateForm('add-reader-form')) {
         alert('Пожалуйста, заполните все обязательные поля');
         return;
@@ -39,7 +54,9 @@ function saveReader() {
         lastName: document.getElementById('last-name').value,
         phone: document.getElementById('phone').value,
         patronymic: document.getElementById('patronymic').value,
-        birthdate: document.getElementById('birthdate').value
+        birthdate: document.getElementById('birthdate').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('address').value
     };
 
     // Отправляем данные на сервер
@@ -73,6 +90,8 @@ function resetReaderForm() {
     document.getElementById('phone').value = '';
     document.getElementById('patronymic').value = '';
     document.getElementById('birthdate').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('address').value = '';
 }
 
 // Поиск читателей
@@ -131,6 +150,8 @@ function displayReaderResults(results) {
             <td>${reader.patronymic || '-'}</td>
             <td>${reader.birthdate}</td>
             <td>${reader.phone}</td>
+            <td>${reader.address}</td>
+            <td>${reader.email}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -142,35 +163,6 @@ function displayReaderResults(results) {
 function resetReaderSearch() {
     document.getElementById('search-query').value = '';
     document.getElementById('reader-results').style.display = 'none';
-}
-
-function saveReader() {
-    const birthdateStr = document.getElementById('birthdate').value;
-    if (!birthdateStr) {
-        alert("Пожалуйста, введите дату рождения");
-        return;
-    }
-
-    const birthdate = new Date(birthdateStr);
-    const today = new Date();
-
-    if (birthdate > today) {
-        alert("Дата рождения не может быть в будущем");
-        return;
-    }
-
-    const age = today.getFullYear() - birthdate.getFullYear();
-    const monthDiff = today.getMonth() - birthdate.getMonth();
-    const dayDiff = today.getDate() - birthdate.getDate();
-
-    const adjustedAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
-
-    if (adjustedAge < 5) {
-        alert("Читателю должно быть не менее 5 лет");
-        return;
-    } else if (adjustedAge > 100) {
-        alert("Вам 100 лет +, идите отдыхайте уже");
-    }
 }
 
 // Редактирование читателя
