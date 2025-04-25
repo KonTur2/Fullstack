@@ -1,23 +1,19 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import sqlite3
+import os
+from instance.fill_db import fill
 from config import DB_PATH
 
 app = Flask(__name__)
 CORS(app)
-
-# Подключение к базе данных
-def get_db_connection():
-    conn = sqlite3.connect('instance/sqlite.db')
-    conn.row_factory = sqlite3.Row 
-    return conn
 
 # Главная страница
 @app.route('/')
 def index():
     return render_template('/index.html')
 
-# Маршрут для получения списка всех книг
+# Страница книг
 @app.route('/books')
 def books_page():
     return render_template('books.html')
@@ -184,4 +180,6 @@ def search_readers():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
+    if not os.path.exists(DB_PATH):
+        fill()
     app.run(debug=True)
