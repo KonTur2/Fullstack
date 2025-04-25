@@ -86,9 +86,9 @@ CREATE TABLE IF NOT EXISTS `reader` (
   `last_name` VARCHAR(50),
   `patronymic` VARCHAR(50),
   `date_birth` TIMESTAMP,
-  `adress` VARCHAR(250),
-  `mail` VARCHAR(50),
-  `contact` VARCHAR(250)
+  `address` VARCHAR(250),
+  `email` VARCHAR(250),
+  `phone` VARCHAR(50)
 );
 
 -- Given book table

@@ -100,9 +100,10 @@ def get_metrics():
 def add_reader():
     try:
         data = request.get_json()
+        print(data)
         
         # Валидация данных
-        required_fields = ['firstName', 'lastName', 'phone']
+        required_fields = ['firstName', 'lastName', 'phone', 'address', 'email', 'birthdate']
         if not all(field in data for field in required_fields):
             return jsonify({"error": "Не заполнены обязательные поля"}), 400
         
@@ -112,14 +113,16 @@ def add_reader():
         # Вставка данных в БД
         cursor.execute('''
             INSERT INTO reader 
-            (first_name, last_name, patronymic, date_birth, contact) 
-            VALUES (?, ?, ?, ?, ?)
+            (first_name, last_name, patronymic, date_birth, phone, address, email) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
             data['firstName'],
             data['lastName'],
             data.get('patronymic', ''),
             data.get('birthdate', ''),
-            data['phone']
+            data['phone'],
+            data['address'],
+            data['email']
         ))
         
         conn.commit()
@@ -153,7 +156,7 @@ def search_readers():
             WHERE first_name LIKE ? 
                OR last_name LIKE ? 
                OR patronymic LIKE ? 
-               OR contact LIKE ?
+               OR phone LIKE ?
         ''', [f"%{search_query}%"] * 4)
         
         readers = cursor.fetchall()
@@ -167,7 +170,9 @@ def search_readers():
                 "lastName": reader[2],
                 "patronymic": reader[3],
                 "birthdate": reader[4],
-                "phone": reader[5]
+                "phone": reader[5],
+                "address": reader[6],
+                "email": reader[7],
             })
         
         return jsonify({

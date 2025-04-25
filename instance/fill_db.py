@@ -58,7 +58,7 @@ def fill():
         ("Мария", "Кузнецова", "Сергеевна", "1985-08-20", "+7 (987) 654-3210"),
     ]
     cursor.executemany(
-        "INSERT INTO reader (first_name, last_name, patronymic, date_birth, contact) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO reader (first_name, last_name, patronymic, date_birth, phone) VALUES (?, ?, ?, ?, ?)",
         readers
     )
 
