@@ -28,52 +28,91 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Сохранение читателя
 function saveReader() {
-    if (!validateForm('add-reader-form')) return;
+    if (!validateForm('add-reader-form')) {
+        alert('Пожалуйста, заполните все обязательные поля');
+        return;
+    }
 
-    const reader = {
-        id: Date.now(),
-        fullName: document.getElementById('full-name').value,
-        ticketNumber: document.getElementById('ticket-number').value,
+    // Собираем данные формы
+    const formData = {
+        firstName: document.getElementById('first-name').value,
+        lastName: document.getElementById('last-name').value,
         phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        birthdate: document.getElementById('birthdate').value,
-        address: document.getElementById('address').value,
-        notes: document.getElementById('notes').value
+        patronymic: document.getElementById('patronymic').value,
+        birthdate: document.getElementById('birthdate').value
     };
 
-    // В реальном приложении здесь будет AJAX запрос
-    readers.push(reader);
-    alert('Читатель успешно зарегистрирован!');
-    resetReaderForm();
+    // Отправляем данные на сервер
+    fetch('http://localhost:5000/api/readers', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.message || 'Читатель успешно зарегистрирован!');
+        resetReaderForm();
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert(error.error || 'Произошла ошибка при сохранении читателя');
+    });
 }
 
 // Сброс формы читателя
 function resetReaderForm() {
-    document.getElementById('full-name').value = '';
-    document.getElementById('ticket-number').value = '';
+    document.getElementById('first-name').value = '';
+    document.getElementById('last-name').value = '';
     document.getElementById('phone').value = '';
-    document.getElementById('email').value = '';
+    document.getElementById('patronymic').value = '';
     document.getElementById('birthdate').value = '';
-    document.getElementById('address').value = '';
-    document.getElementById('notes').value = '';
 }
 
 // Поиск читателей
-function searchReaders() {
-    const name = document.getElementById('search-name').value.toLowerCase();
-    const ticket = document.getElementById('search-ticket').value.toLowerCase();
+async function searchReaders() {
+    const query = document.getElementById('search-query').value.trim();
+    
+    if (!query) {
+        alert('Пожалуйста, введите поисковый запрос');
+        return;
+    }
 
-    // Фильтрация читателей (в реальном приложении будет AJAX запрос)
-    const filteredReaders = readers.filter(reader => {
-        return (name === '' || reader.fullName.toLowerCase().includes(name)) &&
-            (ticket === '' || reader.ticketNumber.toLowerCase().includes(ticket));
-    });
+    try {
+        // Отправляем запрос к API
+        const response = await fetch(`/api/readers/search?query=${encodeURIComponent(query)}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
 
-    displayReaderResults(filteredReaders);
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            displayReaderResults(data.readers);
+        } else {
+            alert(data.error || 'Читатели не найдены');
+        }
+    } catch (error) {
+        console.error('Ошибка при поиске читателей:', error);
+        alert('Произошла ошибка при поиске читателей');
+    }
 }
 
-// Отображение результатов поиска читателей
+// Отображение результатов поиска читателей (остается без изменений)
 function displayReaderResults(results) {
+    console.log(results);
     const tbody = document.getElementById('readers-table-body');
     tbody.innerHTML = '';
 
@@ -86,15 +125,12 @@ function displayReaderResults(results) {
     results.forEach(reader => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${reader.fullName}</td>
-            <td>${reader.ticketNumber}</td>
+            <td>${reader.id}</td>
+            <td>${reader.lastName}</td>
+            <td>${reader.firstName}</td>
+            <td>${reader.patronymic || '-'}</td>
+            <td>${reader.birthdate}</td>
             <td>${reader.phone}</td>
-            <td>${reader.email || '-'}</td>
-            <td class="actions">
-                <button class="btn btn-primary" onclick="editReader(${reader.id})">
-                    <i class="fas fa-edit"></i>
-                </button>
-            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -104,8 +140,7 @@ function displayReaderResults(results) {
 
 // Сброс поиска читателей
 function resetReaderSearch() {
-    document.getElementById('search-name').value = '';
-    document.getElementById('search-ticket').value = '';
+    document.getElementById('search-query').value = '';
     document.getElementById('reader-results').style.display = 'none';
 }
 

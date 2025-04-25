@@ -86,6 +86,8 @@ CREATE TABLE IF NOT EXISTS `reader` (
   `last_name` VARCHAR(50),
   `patronymic` VARCHAR(50),
   `date_birth` TIMESTAMP,
+  `adress` VARCHAR(100),
+  `mail` VARCHAR(50),
   `contact` VARCHAR(250)
 );
 
