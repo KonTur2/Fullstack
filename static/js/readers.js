@@ -1,7 +1,22 @@
+document.addEventListener('DOMContentLoaded', function () {
+    // Проверка параметров URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action');
+
+    if (action === 'search') {
+        document.querySelector('.tab[onclick*="search-reader"]').click();
+    }
+
+    // Маска на телефон (через jQuery Mask Plugin)
+    $(function () {
+        $("#phone").mask("+7 (999) 999-99 99");
+    });
+});
+
 // Массив для хранения читателей (временное решение)
 let readers = [];
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Проверка параметров URL
     const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
@@ -127,6 +142,35 @@ function displayReaderResults(results) {
 function resetReaderSearch() {
     document.getElementById('search-query').value = '';
     document.getElementById('reader-results').style.display = 'none';
+}
+
+function saveReader() {
+    const birthdateStr = document.getElementById('birthdate').value;
+    if (!birthdateStr) {
+        alert("Пожалуйста, введите дату рождения");
+        return;
+    }
+
+    const birthdate = new Date(birthdateStr);
+    const today = new Date();
+
+    if (birthdate > today) {
+        alert("Дата рождения не может быть в будущем");
+        return;
+    }
+
+    const age = today.getFullYear() - birthdate.getFullYear();
+    const monthDiff = today.getMonth() - birthdate.getMonth();
+    const dayDiff = today.getDate() - birthdate.getDate();
+
+    const adjustedAge = (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) ? age - 1 : age;
+
+    if (adjustedAge < 5) {
+        alert("Читателю должно быть не менее 5 лет");
+        return;
+    } else if (adjustedAge > 100) {
+        alert("Вам 100 лет +, идите отдыхайте уже");
+    }
 }
 
 // Редактирование читателя
