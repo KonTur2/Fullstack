@@ -60,6 +60,8 @@ CREATE TABLE IF NOT EXISTS `order_request` (
   FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
 );
 
+
+
 -- Supplier table
 CREATE TABLE IF NOT EXISTS `supplier` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
