@@ -19,12 +19,12 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="index.html"><i class="fas fa-tachometer-alt"></i>Главная</a></li>
-                    <!-- <li><a href="books.html"><i class="fas fa-book"></i>Каталог книг</a></li> -->
-                    <li><a href="readers.html" class="active"><i class="fas fa-users"></i>Читатели</a></li>
-                    <!-- <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i>Выдачи/возвраты</a></li>
-                    <li><a href="reports.html"><i class="fas fa-chart-bar"></i>Отчеты</a></li>
-                    <li><a href="settings.html"><i class="fas fa-cog"></i>Настройки</a></li> -->
+                    <li><a href="/"><i class="fas fa-tachometer-alt"></i>Главная</a></li>
+                    <li><a href="/books"><i class="fas fa-book"></i>Каталог книг</a></li>
+                    <li><a href="/readers" class="active"><i class="fas fa-users"></i>Читатели</a></li>
+                    <li><a href="/transactions"><i class="fas fa-exchange-alt"></i>Выдачи/возвраты</a></li>
+                    <li><a href="/reports"><i class="fas fa-chart-bar"></i>Отчеты</a></li>
+                    <li><a href="/settings"><i class="fas fa-cog"></i>Настройки</a></li>
                 </ul>
             </nav>
         </aside>
@@ -48,40 +48,28 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="full-name">ФИО*</label>
-                            <input type="text" id="full-name" class="form-control" required>
+                            <label for="last-name">Фамилия*</label>
+                            <input type="text" id="last-name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="ticket-number">Номер читательского билета*</label>
-                            <input type="text" id="ticket-number" class="form-control" required>
+                            <label for="first-name">Имя*</label>
+                            <input type="text" id="first-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="patronymic">Отчество</label>
+                            <input type="text" id="patronymic" class="form-control" required>
                         </div>
                     </div>
 
                     <div class="form-row">
+                        <div class="form-group">
+                            <label for="birthdate">Дата рождения*</label>
+                            <input type="date" id="birthdate" class="form-control">
+                        </div>
                         <div class="form-group">
                             <label for="phone">Телефон*</label>
                             <input type="tel" id="phone" class="form-control" required>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="birthdate">Дата рождения</label>
-                            <input type="date" id="birthdate" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="address">Адрес</label>
-                            <input type="text" id="address" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="notes">Примечания</label>
-                        <textarea id="notes" class="form-control" rows="2"></textarea>
                     </div>
 
                     <div class="btn-group">
