@@ -103,6 +103,29 @@ body {
     font-size: 1.8rem;
 }
 
+.user-info {
+    text-align: right;
+    color: var(--dark);
+    font-size: 0.9rem;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    color: var(--secondary);
+}
+
+.logout-btn {
+    color: var(--danger);
+    font-size: 1.2rem;
+    padding-left: 10px;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+.logout-btn:hover {
+    color: #a71d2a;
+}
+
 .user-menu {
     display: flex;
     align-items: center;

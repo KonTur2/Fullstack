@@ -67,6 +67,45 @@ function saveUserSettings() {
     }
 }
 
+// Отправка формы добавления нового пользователя
+function sendNewUserData() {
+    const form = document.getElementById('new-user-form');
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const userData = {
+        firstName: formData.get('first_name'),
+        lastName: formData.get('last_name'),
+        patronymic: formData.get('patronymic'),
+        position: formData.get('position'),
+        login: formData.get('login'),
+        password: formData.get('password')
+    };
+
+    fetch('/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Пользователь успешно добавлен');
+            form.reset();
+        } else {
+            alert('Ошибка: ' + (result.message || result.error));
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при отправке:', error);
+        alert('Ошибка при отправке данных');
+    });
+}
+
+
+
 // Загрузка настроек при открытии страницы
 document.addEventListener('DOMContentLoaded', function() {
     // В реальном приложении здесь будет загрузка текущих настроек с сервера
@@ -76,7 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const tab = urlParams.get('tab');
 
-    if (tab && ['system-settings', 'library-settings', 'user-settings'].includes(tab)) {
+    if (tab && ['system-settings', 'library-settings', 'user-settings', 'new-user-settings'].includes(tab)) {
         showSettingsTab(tab);
+    }
+
+    const addUserBtn = document.getElementById('add-user-btn');
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', sendNewUserData);
     }
 });
