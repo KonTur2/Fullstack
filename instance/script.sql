@@ -47,7 +47,9 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `first_name` VARCHAR(50),
   `last_name` VARCHAR(50),
   `patronymic` VARCHAR(50),
-  `position` VARCHAR(50)
+  `position` VARCHAR(50),
+  `login` VARCHAR(250),
+  `password` VARCHAR(250)
 );
 
 -- Order request table
