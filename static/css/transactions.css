@@ -107,3 +107,44 @@
 .tab:hover:not(.active) {
     background-color: rgba(78, 115, 223, 0.1);
 }
+
+/* Стиль для поля с датой только для чтения */
+input[readonly] {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* Стили для карточек информации */
+.info-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.info-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    margin-bottom: 5px;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.info-value {
+    margin-top: 3px;
+}

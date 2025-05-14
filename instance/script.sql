@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `book` (
   `name` VARCHAR(250),
   `year` VARCHAR(10),
   `quantity` INTEGER,
-  `price` REAL,
   `author_id` INTEGER NOT NULL,
   `genre_id` INTEGER NOT NULL,
   `publishing_house` VARCHAR(100),

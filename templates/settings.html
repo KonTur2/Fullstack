@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройки | Твердый переплет</title>
+    <link rel="icon" href="../static/img/icon.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../static/css/styles.css">
     <link rel="stylesheet" href="../static/css/settings.css">
@@ -56,21 +57,23 @@
             </header>
 
             <div class="settings-tabs">
-                <div class="settings-tab active" onclick="showSettingsTab('system-settings')">
+                <!-- <div class="settings-tab active" onclick="showSettingsTab('system-settings')">
                     <i class="fas fa-server"></i> Системные
-                </div>
+                </div> -->
                 <div class="settings-tab" onclick="showSettingsTab('library-settings')">
                     <i class="fas fa-book-open"></i> Библиотечные
                 </div>
-                <div class="settings-tab" onclick="showSettingsTab('user-settings')">
+                <!-- <div class="settings-tab" onclick="showSettingsTab('user-settings')">
                     <i class="fas fa-user-cog"></i> Пользовательские
+
+                </div> -->
                 </div>
                 <div class="settings-tab" onclick="showSettingsTab('new-user-settings')">
                     <i class="fas fa-user-cog"></i> Добавление пользователя
                 </div>
             </div>
 
-            <div id="system-settings" class="settings-tab-content">
+            <!-- <div id="system-settings" class="settings-tab-content">
                 <div class="form-container">
                     <h2 class="form-title"><i class="fas fa-server"></i> Системные настройки</h2>
 
@@ -101,7 +104,7 @@
                         <button class="btn btn-primary" onclick="saveSystemSettings()">Сохранить</button>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div id="library-settings" class="settings-tab-content" style="display: none;">
                 <div class="form-container">
@@ -117,17 +120,17 @@
                         <input type="number" id="max-books-per-user" class="form-control" value="5" min="1" max="20">
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="fine-per-day">Штраф за просрочку (в день)</label>
                         <input type="number" id="fine-per-day" class="form-control" value="10" min="0" step="10">
-                    </div>
+                    </div> -->
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label>
                             <input type="checkbox" id="allow-reservations" checked>
                             Разрешить бронирование книг
                         </label>
-                    </div>
+                    </div> -->
 
                     <div class="btn-group">
                         <button class="btn btn-secondary">Сбросить</button>
@@ -136,7 +139,7 @@
                 </div>
             </div>
 
-            <div id="user-settings" class="settings-tab-content" style="display: none;">
+            <!-- <div id="user-settings" class="settings-tab-content" style="display: none;">
                 <div class="form-container">
                     <h2 class="form-title"><i class="fas fa-user-cog"></i> Пользовательские настройки</h2>
 
@@ -171,7 +174,7 @@
                         <button class="btn btn-secondary">Сбросить</button>
                         <button class="btn btn-primary" onclick="saveUserSettings()">Сохранить</button>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div id="new-user-settings" class="settings-tab-content" style="display: none;">

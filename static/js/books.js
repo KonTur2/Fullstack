@@ -71,25 +71,51 @@ function resetBookForm() {
     document.querySelector('.cover-upload span').textContent = 'Загрузите обложку книги';
 }
 
-// Поиск книг
+let allBooks = []; // Глобальная переменная для хранения всех книг
+
+// Загружаем все книги при загрузке страницы
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await fetch('/api/books/all');
+        const data = await response.json();
+        if (data.success) {
+            allBooks = data.books;
+        }
+    } catch (error) {
+        console.error('Ошибка при загрузке книг:', error);
+    }
+});
+
+// Функция поиска книг с фильтрацией
 function searchBooks() {
     const title = document.getElementById('search-title').value.toLowerCase();
     const author = document.getElementById('search-author').value.toLowerCase();
     const genre = document.getElementById('search-genre').value;
-    const location = document.getElementById('search-location').value.toLowerCase();
+    const isbn = document.getElementById('search-isbn').value.toLowerCase();
 
-    // Фильтрация книг (в реальном приложении будет AJAX запрос)
-    const filteredBooks = books.filter(book => {
-        return (title === '' || book.title.toLowerCase().includes(title)) &&
-               (author === '' || book.author.toLowerCase().includes(author)) &&
-               (genre === '' || book.genre === genre) &&
-               (location === '' || book.location.toLowerCase().includes(location));
+    // Фильтрация книг
+    const filteredBooks = allBooks.filter(book => {
+        const matchesTitle = title === '' || book.title.toLowerCase().includes(title);
+        const matchesAuthor = author === '' || book.author.toLowerCase().includes(author);
+        const matchesGenre = genre === '' || book.genre.toLowerCase() === genre.toLowerCase();
+        const matchesIsbn = isbn === '' || (book.isbn && book.isbn.toLowerCase().includes(isbn));
+        
+        return matchesTitle && matchesAuthor && matchesGenre && matchesIsbn;
     });
 
     displaySearchResults(filteredBooks);
 }
 
-// Отображение результатов поиска
+// Функция сброса поиска
+function resetSearch() {
+    document.getElementById('search-title').value = '';
+    document.getElementById('search-author').value = '';
+    document.getElementById('search-genre').value = '';
+    document.getElementById('search-isbn').value = '';
+    displaySearchResults(allBooks);
+}
+
+// Отображение результатов
 function displaySearchResults(results) {
     const tbody = document.getElementById('books-table-body');
     tbody.innerHTML = '';
@@ -108,11 +134,8 @@ function displaySearchResults(results) {
             <td>${book.genre}</td>
             <td>${book.quantity}</td>
             <td>${book.available}</td>
-            <td>${book.location}</td>
+            <td>${book.publishing_house || 'Не указано'}</td>
             <td class="actions">
-                <button class="btn btn-primary" onclick="editBook(${book.id})">
-                    <i class="fas fa-edit"></i>
-                </button>
                 <button class="btn btn-danger" onclick="showWriteOffModal(${book.id})">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -124,42 +147,6 @@ function displaySearchResults(results) {
     document.getElementById('search-results').style.display = 'block';
 }
 
-// Сброс поиска
-function resetSearch() {
-    document.getElementById('search-title').value = '';
-    document.getElementById('search-author').value = '';
-    document.getElementById('search-genre').value = '';
-    document.getElementById('search-location').value = '';
-    document.getElementById('search-results').style.display = 'none';
-}
-
-// Редактирование книги
-function editBook(bookId) {
-    const book = books.find(b => b.id === bookId);
-    if (!book) return;
-
-    // Заполнение формы
-    document.getElementById('title').value = book.title;
-    document.getElementById('author').value = book.author;
-    document.getElementById('isbn').value = book.isbn;
-    document.getElementById('year').value = book.year;
-    document.getElementById('genre').value = book.genre;
-    document.getElementById('quantity').value = book.quantity;
-    document.getElementById('location').value = book.location;
-    document.getElementById('description').value = book.description;
-
-    if (book.cover) {
-        document.getElementById('cover-preview').src = book.cover;
-        document.getElementById('cover-preview').style.display = 'block';
-        document.querySelector('.cover-upload i').style.display = 'none';
-        document.querySelector('.cover-upload span').textContent = 'Изменить обложку';
-    }
-
-    // Переключение на вкладку добавления
-    document.querySelector('.tab[onclick*="add-book"]').click();
-
-    // Можно добавить флаг редактирования и ID книги в скрытое поле
-}
 
 // Списание книги
 function showWriteOffModal(bookId) {
