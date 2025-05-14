@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `genre` (
 -- Book table
 CREATE TABLE IF NOT EXISTS `book` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `picture` TEXT;
   `name` VARCHAR(250),
   `year` VARCHAR(10),
   `quantity` INTEGER,
@@ -59,6 +60,8 @@ CREATE TABLE IF NOT EXISTS `order_request` (
   FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
 );
 
+
+
 -- Supplier table
 CREATE TABLE IF NOT EXISTS `supplier` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +89,9 @@ CREATE TABLE IF NOT EXISTS `reader` (
   `last_name` VARCHAR(50),
   `patronymic` VARCHAR(50),
   `date_birth` TIMESTAMP,
-  `contact` VARCHAR(250)
+  `address` VARCHAR(250),
+  `email` VARCHAR(250),
+  `phone` VARCHAR(50)
 );
 
 -- Given book table
@@ -103,3 +108,17 @@ CREATE TABLE IF NOT EXISTS `given_book` (
   FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
 );
+
+CREATE TABLE IF NOT EXISTS `sistem_settings` (
+  `standard_rental_period` INTEGER NOT NULL,
+  `max_books_per_reader` INTEGER NOT NULL,
+  `late_return_penalty` INTEGER NOT NULL,
+  PRIMARY KEY (standard_rental_period, max_books_per_reader, late_return_penalty)
+);
+
+--CREATE TABLE IF NOT EXISTS `sistem_settings` (
+--  `language` VARCHAR(25) NOT NULL,
+--  `backup_period` VARCHAR(25) NOT NULL,
+--  `session_timeout` INTEGER NOT NULL,
+--  PRIMARY KEY (language, backup_period, session_timeout)
+--);

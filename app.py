@@ -1,21 +1,19 @@
 from flask import Flask, jsonify, request, render_template
+from flask_cors import CORS
 import sqlite3
+import os
+from instance.fill_db import fill
 from config import DB_PATH
 
 app = Flask(__name__)
-
-# Подключение к базе данных
-def get_db_connection():
-    conn = sqlite3.connect('instance/sqlite.db')
-    conn.row_factory = sqlite3.Row 
-    return conn
+CORS(app)
 
 # Главная страница
 @app.route('/')
 def index():
     return render_template('/index.html')
 
-# Маршрут для получения списка всех книг
+# Страница книг
 @app.route('/books')
 def books_page():
     return render_template('books.html')
@@ -38,11 +36,6 @@ def reports_page():
 # Страница настроек
 @app.route('/settings')
 def settings_page():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # cursor.execute('SELECT * FROM reader')
-    # readers = cursor.fetchall()
-    conn.close()
     return render_template('settings.html')
 
 ###############################################################################################
@@ -107,9 +100,10 @@ def get_metrics():
 def add_reader():
     try:
         data = request.get_json()
+        print(data)
         
         # Валидация данных
-        required_fields = ['firstName', 'lastName', 'phone']
+        required_fields = ['firstName', 'lastName', 'phone', 'address', 'email', 'birthdate']
         if not all(field in data for field in required_fields):
             return jsonify({"error": "Не заполнены обязательные поля"}), 400
         
@@ -119,14 +113,16 @@ def add_reader():
         # Вставка данных в БД
         cursor.execute('''
             INSERT INTO reader 
-            (first_name, last_name, patronymic, date_birth, contact) 
-            VALUES (?, ?, ?, ?, ?)
+            (first_name, last_name, patronymic, date_birth, phone, address, email) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
             data['firstName'],
             data['lastName'],
             data.get('patronymic', ''),
             data.get('birthdate', ''),
-            data['phone']
+            data['phone'],
+            data['address'],
+            data['email']
         ))
         
         conn.commit()
@@ -138,6 +134,52 @@ def add_reader():
             "message": "Читатель успешно зарегистрирован",
             "readerId": reader_id
         }), 201
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/readers/search', methods=['GET'])
+def search_readers():
+    try:
+        search_query = request.args.get('query')
+        
+        if not search_query:
+            return jsonify({"error": "Не указана строка для поиска"}), 400
+        
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Ищем в любом из полей: first_name, last_name, patronymic, contact
+        cursor.execute('''
+            SELECT * FROM reader 
+            WHERE first_name LIKE ? 
+               OR last_name LIKE ? 
+               OR patronymic LIKE ? 
+               OR phone LIKE ?
+        ''', [f"%{search_query}%"] * 4)
+        
+        readers = cursor.fetchall()
+        conn.close()
+        
+        readers_list = []
+        for reader in readers:
+            readers_list.append({
+                "id": reader[0],
+                "firstName": reader[1],
+                "lastName": reader[2],
+                "patronymic": reader[3],
+                "birthdate": reader[4],
+                "phone": reader[5],
+                "address": reader[6],
+                "email": reader[7],
+            })
+        
+        return jsonify({
+            "success": True,
+            "readers": readers_list,
+            "count": len(readers_list)
+        }), 200
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -209,5 +251,11 @@ def add_book():
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     app.run(debug=True)
 
+=======
+    if not os.path.exists(DB_PATH):
+        fill()
+    app.run(debug=True)
+>>>>>>> 0c9750c358c179c0949a1926dda41bc417138cc7
