@@ -115,6 +115,8 @@ CREATE TABLE IF NOT EXISTS `sistem_settings` (
   PRIMARY KEY (standard_rental_period, max_books_per_reader, late_return_penalty)
 )
 
+
+
 --CREATE TABLE IF NOT EXISTS `sistem_settings` (
 --  `language` VARCHAR(25) NOT NULL,
 --  `backup_period` VARCHAR(25) NOT NULL,
