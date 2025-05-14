@@ -33,12 +33,12 @@ def fill():
 
     # Добавление книг
     books = [
-        ("Война и мир", "1869", 10, 1500.50, 1, 1, "Эксмо"),
-        ("Преступление и наказание", "1866", 5, 1200.00, 2, 1, "АСТ"),
-        ("Вишнёвый сад", "1904", 8, 800.75, 3, 3, "Речь"),
+        ("Война и мир", "isbn1", "1869", 10, 1500.50, 1, 1, "Эксмо"),
+        ("Преступление и наказание", "isbn2", "1866", 5, 1200.00, 2, 1, "АСТ"),
+        ("Вишнёвый сад", "isbn3", "1904", 8, 800.75, 3, 3, "Речь"),
     ]
     cursor.executemany(
-        "INSERT INTO book (name, year, quantity, price, author_id, genre_id, publishing_house) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO book (name, isbn, year, quantity, price, author_id, genre_id, publishing_house) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         books
     )
 

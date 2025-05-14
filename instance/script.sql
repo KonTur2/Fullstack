@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS `genre` (
 -- Book table
 CREATE TABLE IF NOT EXISTS `book` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `picture` TEXT;
+  `isbn` VARCHAR(250),
+  `picture` TEXT,
   `name` VARCHAR(250),
   `year` VARCHAR(10),
   `quantity` INTEGER,
