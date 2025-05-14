@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/img/icon.png" type="image/x-icon">
     <title>Выдача и возврат книг | Твердый переплет</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../static/css/styles.css">
     <link rel="stylesheet" href="../static/css/transactions.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <div class="container">
@@ -47,7 +50,7 @@
                     <h2 class="form-title">Выдача книги читателю</h2>
 
                     <div class="form-group">
-                        <label for="reader-ticket">Номер читательского билета*</label>
+                        <label for="reader-ticket">Телефон читателя*</label>
                         <input type="text" id="reader-ticket" class="form-control" required>
                         <button class="btn btn-secondary" style="margin-top: 10px; width: auto;" onclick="findReader()">
                             Найти читателя
@@ -60,10 +63,6 @@
                             <div class="info-item">
                                 <div class="info-label">ФИО</div>
                                 <div class="info-value" id="reader-name">Иванов Иван Иванович</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">Номер билета</div>
-                                <div class="info-value" id="reader-ticket-number">ЧБ-2023-001</div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Телефон</div>
@@ -96,8 +95,8 @@
                                 <div class="info-value" id="book-year">2020</div>
                             </div>
                             <div class="info-item">
-                                <div class="info-label">Место хранения</div>
-                                <div class="info-value" id="book-location">Стеллаж А-12</div>
+                                <div class="info-label">Издательство</div>
+                                <div class="info-value" id="book-publishing_house">Не указан</div>
                             </div>
                         </div>
                     </div>

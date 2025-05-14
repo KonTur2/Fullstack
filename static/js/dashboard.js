@@ -65,53 +65,53 @@ function loadMetrics() {
     }
 }
 
-// Загрузка уведомлений
-function loadNotifications() {
-    // В реальном приложении здесь будет AJAX запрос
-    const notifications = [
-        {
-            type: 'danger',
-            icon: 'exclamation',
-            title: '15 книг требуют срочного списания',
-            time: 'Сегодня, 10:45'
-        },
-        {
-            type: 'warning',
-            icon: 'clock',
-            title: '42 книги с истекающим сроком возврата',
-            time: 'Вчера, 16:30'
-        },
-        {
-            type: 'info',
-            icon: 'bookmark',
-            title: '7 новых запросов на бронирование',
-            time: 'Вчера, 14:15'
-        }
-    ];
+// // Загрузка уведомлений
+// function loadNotifications() {
+//     // В реальном приложении здесь будет AJAX запрос
+//     const notifications = [
+//         {
+//             type: 'danger',
+//             icon: 'exclamation',
+//             title: '15 книг требуют срочного списания',
+//             time: 'Сегодня, 10:45'
+//         },
+//         {
+//             type: 'warning',
+//             icon: 'clock',
+//             title: '42 книги с истекающим сроком возврата',
+//             time: 'Вчера, 16:30'
+//         },
+//         {
+//             type: 'info',
+//             icon: 'bookmark',
+//             title: '7 новых запросов на бронирование',
+//             time: 'Вчера, 14:15'
+//         }
+//     ];
 
-    const notificationsContainer = document.querySelector('.notifications');
-    const notificationsList = notificationsContainer.querySelector('.notifications-list') ||
-        document.createElement('div');
+//     const notificationsContainer = document.querySelector('.notifications');
+//     const notificationsList = notificationsContainer.querySelector('.notifications-list') ||
+//         document.createElement('div');
 
-    notificationsList.className = 'notifications-list';
-    notificationsList.innerHTML = '';
+//     notificationsList.className = 'notifications-list';
+//     notificationsList.innerHTML = '';
 
-    notifications.forEach(notification => {
-        const notificationItem = document.createElement('div');
-        notificationItem.className = 'notification-item';
-        notificationItem.innerHTML = `
-            <div class="notification-icon ${notification.type}">
-                <i class="fas fa-${notification.icon}"></i>
-            </div>
-            <div class="notification-content">
-                <div class="notification-title">${notification.title}</div>
-                <div class="notification-time">${notification.time}</div>
-            </div>
-        `;
-        notificationsList.appendChild(notificationItem);
-    });
+//     notifications.forEach(notification => {
+//         const notificationItem = document.createElement('div');
+//         notificationItem.className = 'notification-item';
+//         notificationItem.innerHTML = `
+//             <div class="notification-icon ${notification.type}">
+//                 <i class="fas fa-${notification.icon}"></i>
+//             </div>
+//             <div class="notification-content">
+//                 <div class="notification-title">${notification.title}</div>
+//                 <div class="notification-time">${notification.time}</div>
+//             </div>
+//         `;
+//         notificationsList.appendChild(notificationItem);
+//     });
 
-    if (!notificationsContainer.querySelector('.notifications-list')) {
-        notificationsContainer.appendChild(notificationsList);
-    }
-}
+//     if (!notificationsContainer.querySelector('.notifications-list')) {
+//         notificationsContainer.appendChild(notificationsList);
+//     }
+// }
