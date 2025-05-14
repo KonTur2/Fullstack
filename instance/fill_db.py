@@ -44,11 +44,12 @@ def fill():
 
     # Добавление сотрудников
     employees = [
-        ("Иван", "Иванов", "Иванович", "Библиотекарь"),
-        ("Пётр", "Петров", "Петрович", "Администратор"),
+        ("Иван", "Иванов", "Иванович", "Библиотекарь", "user1", "pass"),
+        ("Пётр", "Петров", "Петрович", "Администратор", "user2", "pass"),
+        ("Димочка", "Димочкин", "Димович", "Бухгалтер", "user3", "pass"),
     ]
     cursor.executemany(
-        "INSERT INTO employee (first_name, last_name, patronymic, position) VALUES (?, ?, ?, ?)",
+        "INSERT INTO employee (first_name, last_name, patronymic, position, login, password) VALUES (?, ?, ?, ?, ?, ?)",
         employees
     )
 

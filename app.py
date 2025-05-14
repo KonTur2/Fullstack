@@ -1,46 +1,183 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, url_for, flash, abort
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from flask_cors import CORS
+from functools import wraps
 import sqlite3
 import os
 from instance.fill_db import fill
 from config import DB_PATH
 
 app = Flask(__name__)
+app.secret_key = 'SECRET'
 CORS(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login_page'
+
+# Wrapper for role management
+def role_required(*roles):
+    def wrapper(f):
+        @wraps(f)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return login_manager.unauthorized()
+            if current_user.role not in roles:
+                abort(403)  # доступ запрещен
+            return f(*args, **kwargs)
+        return decorated_view
+    return wrapper
+
 
 # Главная страница
 @app.route('/')
+@role_required('Библиотекарь', 'Бухгалтер', 'Администратор')
+@login_required
 def index():
-    return render_template('/index.html')
+    return render_template('/index.html', role=current_user.role)
 
 # Страница книг
 @app.route('/books')
+@role_required('Библиотекарь', 'Администратор')
+@login_required
 def books_page():
-    return render_template('books.html')
+    return render_template('books.html', role=current_user.role)
 
 # Страница со списком читателей
 @app.route('/readers')
+@role_required('Библиотекарь', 'Администратор')
+@login_required
 def readers_page():
-    return render_template('readers.html')
+    return render_template('readers.html', role=current_user.role)
 
 # Страница выдачи и возврата книг
 @app.route('/transactions')
+@role_required('Библиотекарь', 'Администратор')
+@login_required
 def transactions_page():
-    return render_template('transactions.html')
+    return render_template('transactions.html', role=current_user.role)
 
 # Страница отчётов
 @app.route('/reports')
+@role_required('Бухгалтер', 'Администратор')
+@login_required
 def reports_page():
-    return render_template('reports.html')
+    return render_template('reports.html', role=current_user.role)
 
 # Страница настроек
 @app.route('/settings')
+@role_required('Администратор')
+@login_required
 def settings_page():
-    return render_template('settings.html')
+    return render_template('settings.html', role=current_user.role)
 
 ###############################################################################################
 
 # API Routes
+
+@login_manager.user_loader
+def load_user(user_id):
+    row = get_user_by_id(user_id)
+    if row:
+        return type('AnonUser', (UserMixin,), {
+            'id': str(row[0]),
+            'login': row[1],
+            'role': row[3],
+            'first_name': row[4],
+            'last_name': row[5]
+        })()
+    return None
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login_page():
+    if request.method == 'POST':
+        login_ = request.form['login']
+        password_ = request.form['password']
+        user = get_user_by_login(login_)
+        if user and user[2] == password_:
+            user_obj = type('AnonUser', (UserMixin,), {
+                'id': str(user[0]),
+                'login': user[1],
+                'role': user[3]  
+            })()
+            login_user(user_obj)
+            return redirect(url_for('protected'))
+        flash("Неверный логин или пароль")
+    return render_template('login.html')
+
+
+@app.route('/api/register', methods=['POST'])
+def register_user():
+    try:
+        data = request.get_json()
+        print(data)
+
+        # Обязательные поля
+        required_fields = ['firstName', 'lastName', 'patronymic', 'position', 'login', 'password']
+        if not all(field in data and data[field] for field in required_fields):
+            return jsonify({"error": "Не заполнены обязательные поля"}), 400
+
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        # Проверка уникальности логина
+        cursor.execute("SELECT id FROM employee WHERE login = ?", (data['login'],))
+        if cursor.fetchone():
+            conn.close()
+            return jsonify({"error": "Пользователь с таким логином уже существует"}), 409
+
+        # Вставка нового пользователя
+        cursor.execute('''
+            INSERT INTO employee 
+            (first_name, last_name, patronymic, position, login, password)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (
+            data['firstName'],
+            data['lastName'],
+            data['patronymic'],
+            data['position'],
+            data['login'],
+            data['password']  
+        ))
+
+        conn.commit()
+        user_id = cursor.lastrowid
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "message": "Пользователь успешно добавлен",
+            "userId": user_id
+        }), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login_page'))
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json()
+    login_ = data.get('login')
+    password_ = data.get('password')
+
+    user = get_user_by_login(login_)
+    if user and user[2] == password_:
+        user_obj = type('AnonUser', (UserMixin,), {
+            'id': str(user[0]),
+            'login': user[1],
+            'role': user[3]
+        })()
+        login_user(user_obj)
+        return jsonify({'message': 'Успешный вход'}), 200
+    else:
+        return jsonify({'message': 'Неверный логин или пароль'}), 401
 
 @app.route('/api/metrics')
 def get_metrics():
@@ -184,6 +321,7 @@ def search_readers():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
 @app.route('/api/books/all', methods=['GET'])
 def get_all_books():
     try:
@@ -356,6 +494,26 @@ def issue_book():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    
+def get_user_by_login(login):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, login, password, position, first_name, last_name FROM employee WHERE login = ?", (login,))
+    row = cursor.fetchone()
+    conn.close()
+    return row  # (id, login, password, position)
+
+def get_user_by_id(user_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, login, password, position, first_name, last_name FROM employee WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row
+
+
+
 
 if __name__ == '__main__':
     if not os.path.exists(DB_PATH):
