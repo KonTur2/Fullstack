@@ -6,19 +6,20 @@ CREATE TABLE IF NOT EXISTS `author` (
   `patronymic` VARCHAR(50),
   `birth_year` VARCHAR(10),
   `country` VARCHAR(45)
-)
+);
 
 -- Genre table
 CREATE TABLE IF NOT EXISTS `genre` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `genre_type` VARCHAR(45),
   `name` VARCHAR(45)
-)
+);
 
 -- Book table
 CREATE TABLE IF NOT EXISTS `book` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-  `picture` TEXT;
+  `isbn` VARCHAR(250),
+  `picture` TEXT,
   `name` VARCHAR(250),
   `year` VARCHAR(10),
   `quantity` INTEGER,
@@ -28,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `book` (
   `publishing_house` VARCHAR(100),
   FOREIGN KEY (`author_id`) REFERENCES `author` (`id`),
   FOREIGN KEY (`genre_id`) REFERENCES `genre` (`id`)
-)
+);
 
 -- Debiting act table
 CREATE TABLE IF NOT EXISTS `debiting_act` (
@@ -38,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `debiting_act` (
   `commentary` VARCHAR(250),
   `book_id` INTEGER NOT NULL,
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
-)
+);
 
 -- Employee table
 CREATE TABLE IF NOT EXISTS `employee` (
@@ -47,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
   `last_name` VARCHAR(50),
   `patronymic` VARCHAR(50),
   `position` VARCHAR(50)
-)
+);
 
 -- Order request table
 CREATE TABLE IF NOT EXISTS `order_request` (
@@ -58,8 +59,7 @@ CREATE TABLE IF NOT EXISTS `order_request` (
   `employee_id` INTEGER NOT NULL,
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`),
   FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
-)
-
+);
 
 -- Supplier table
 CREATE TABLE IF NOT EXISTS `supplier` (
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `supplier` (
   `name` VARCHAR(250),
   `contact` VARCHAR(250),
   `contact_person` VARCHAR(250)
-)
+);
 
 -- Lading bill table
 CREATE TABLE IF NOT EXISTS `lading_bill` (
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `lading_bill` (
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`),
   FOREIGN KEY (`order_request_id`) REFERENCES `order_request` (`id`),
   FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`)
-)
+);
 
 -- Reader table
 CREATE TABLE IF NOT EXISTS `reader` (
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `reader` (
   `address` VARCHAR(250),
   `email` VARCHAR(250),
   `phone` VARCHAR(50)
-)
+);
 
 -- Given book table
 CREATE TABLE IF NOT EXISTS `given_book` (
@@ -106,20 +106,21 @@ CREATE TABLE IF NOT EXISTS `given_book` (
   FOREIGN KEY (`reader_id`) REFERENCES `reader` (`id`),
   FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
-)
+);
 
 CREATE TABLE IF NOT EXISTS `sistem_settings` (
   `standard_rental_period` INTEGER NOT NULL,
   `max_books_per_reader` INTEGER NOT NULL,
   `late_return_penalty` INTEGER NOT NULL,
-  PRIMARY KEY (standard_rental_period, max_books_per_reader, late_return_penalty)
-)
+  PRIMARY KEY (`standard_rental_period`, `max_books_per_reader`, `late_return_penalty`)
+);
 
-
-
---CREATE TABLE IF NOT EXISTS `sistem_settings` (
---  `language` VARCHAR(25) NOT NULL,
---  `backup_period` VARCHAR(25) NOT NULL,
---  `session_timeout` INTEGER NOT NULL,
---  PRIMARY KEY (language, backup_period, session_timeout)
---);
+-- Alternative settings table (commented out)
+/*
+CREATE TABLE IF NOT EXISTS `sistem_settings` (
+  `language` VARCHAR(25) NOT NULL,
+  `backup_period` VARCHAR(25) NOT NULL,
+  `session_timeout` INTEGER NOT NULL,
+  PRIMARY KEY (`language`, `backup_period`, `session_timeout`)
+);
+*/
