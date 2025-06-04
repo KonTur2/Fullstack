@@ -52,7 +52,7 @@ function saveReader() {
     const formData = {
         firstName: document.getElementById('first-name').value,
         lastName: document.getElementById('last-name').value,
-        phone: document.getElementById('phone').value,
+        phone: document.getElementById('phone').value.replace(/\D/g, ''),
         patronymic: document.getElementById('patronymic').value,
         birthdate: document.getElementById('birthdate').value,
         email: document.getElementById('email').value,
@@ -150,8 +150,9 @@ function displayReaderResults(results) {
             <td>${reader.patronymic || '-'}</td>
             <td>${reader.birthdate}</td>
             <td>${reader.phone}</td>
-            <td>${reader.address}</td>
+            <td>${reader.adress}</td>
             <td>${reader.email}</td>
+            <td>${reader.penalty_points}</td>
         `;
         tbody.appendChild(tr);
     });

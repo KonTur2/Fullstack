@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS `genre` (
 CREATE TABLE IF NOT EXISTS `book` (
   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
   `isbn` VARCHAR(250),
-  `picture` TEXT,
   `name` VARCHAR(250),
   `year` VARCHAR(10),
   `quantity` INTEGER,
@@ -91,7 +90,8 @@ CREATE TABLE IF NOT EXISTS `reader` (
   `date_birth` TIMESTAMP,
   `address` VARCHAR(250),
   `email` VARCHAR(250),
-  `phone` VARCHAR(50)
+  `phone` VARCHAR(50),
+  `penalty_points` INT DEFAULT 0
 );
 
 -- Given book table
@@ -109,19 +109,9 @@ CREATE TABLE IF NOT EXISTS `given_book` (
   FOREIGN KEY (`book_id`) REFERENCES `book` (`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `sistem_settings` (
-  `standard_rental_period` INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS `system_settings` (
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `standart_rental_period` INTEGER NOT NULL,
   `max_books_per_reader` INTEGER NOT NULL,
-  `late_return_penalty` INTEGER NOT NULL,
-  PRIMARY KEY (`standard_rental_period`, `max_books_per_reader`, `late_return_penalty`)
+  `late_return_penalty` INTEGER NOT NULL
 );
-
--- Alternative settings table (commented out)
-/*
-CREATE TABLE IF NOT EXISTS `sistem_settings` (
-  `language` VARCHAR(25) NOT NULL,
-  `backup_period` VARCHAR(25) NOT NULL,
-  `session_timeout` INTEGER NOT NULL,
-  PRIMARY KEY (`language`, `backup_period`, `session_timeout`)
-);
-*/
