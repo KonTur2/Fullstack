@@ -2,25 +2,6 @@
 let books = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Загрузка обложки
-    document.getElementById('cover-upload').addEventListener('click', function() {
-        document.getElementById('cover-input').click();
-    });
-
-    document.getElementById('cover-input').addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('cover-preview');
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                document.querySelector('.cover-upload i').style.display = 'none';
-                document.querySelector('.cover-upload span').textContent = 'Изменить обложку';
-            }
-            reader.readAsDataURL(file);
-        }
-    });
 
     // Проверка параметров URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -169,3 +150,91 @@ function confirmWriteOff() {
     hideModal('write-off-modal');
     searchBooks(); // Обновляем результаты поиска
 }
+
+
+// Проверка книги по ISBN
+async function checkBookByISBN() {
+    const isbn = document.getElementById('isbn').value.trim();
+    if (!isbn) return;
+
+    try {
+        const response = await fetch(`/api/book/check-isbn?isbn=${encodeURIComponent(isbn)}`);
+        const data = await response.json();
+
+        if (data.exists) {
+            // Автозаполнение полей если книга найдена
+            document.getElementById('title').value = data.book.name || '';
+            document.getElementById('author').value = data.author_name || '';
+            document.getElementById('year').value = data.book.year || '';
+            document.getElementById('publishing_house').value = data.book.publishing_house || '';
+            document.getElementById('genre').value = data.genre_id || '';
+            document.getElementById('description').value = data.book.description || '';
+        }
+    } catch (error) {
+        console.error('Ошибка при проверке ISBN:', error);
+    }
+}
+
+// Сохранение книги
+async function saveBook() {
+    const title = document.getElementById('title').value.trim();
+    const author = document.getElementById('author').value.trim();
+    const isbn = document.getElementById('isbn').value.trim();
+    const year = document.getElementById('year').value.trim();
+    const genre = document.getElementById('genre').value;
+    const quantity = document.getElementById('quantity').value;
+    const publishingHouse = document.getElementById('publishing_house').value.trim();
+
+    if (!title || !author || !genre || !quantity || !publishingHouse) {
+        alert('Заполните все обязательные поля');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/book/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                author,
+                isbn,
+                year,
+                genre,
+                quantity,
+                publishing_house: publishingHouse
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        alert('Книга успешно добавлена!');
+        resetBookForm();
+    } catch (error) {
+        console.error('Ошибка при добавлении книги:', error);
+        alert('Произошла ошибка: ' + error.message);
+    }
+}
+
+// Сброс формы
+function resetBookForm() {
+    document.getElementById('title').value = '';
+    document.getElementById('author').value = '';
+    document.getElementById('isbn').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('genre').value = '';
+    document.getElementById('quantity').value = '1';
+    document.getElementById('publishing_house').value = '';
+    document.getElementById('description').value = '';
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+    // Проверка ISBN при изменении
+    document.getElementById('isbn').addEventListener('change', checkBookByISBN);
+});

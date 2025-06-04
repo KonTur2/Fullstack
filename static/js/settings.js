@@ -29,15 +29,32 @@ function saveSystemSettings() {
 // Сохранение библиотечных настроек
 function saveLibrarySettings() {
     const settings = {
-        loanPeriod: document.getElementById('default-loan-period').value,
-        maxBooks: document.getElementById('max-books-per-user').value,
-        finePerDay: document.getElementById('fine-per-day').value,
-        allowReservations: document.getElementById('allow-reservations').checked
+        standart_rental_period: document.getElementById('standart_rental_period').value,
+        max_books_per_reader: document.getElementById('max_books_per_reader').value,
+        late_return_penalty: document.getElementById('late_return_penalty').value,
     };
 
-    // В реальном приложении здесь будет AJAX запрос
-    console.log('Сохранение библиотечных настроек:', settings);
-    alert('Библиотечные настройки сохранены');
+    fetch('/api/system/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Успешно сохранено:', data);
+        alert('Настройки успешно сохранены!');
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Ошибка при сохранении: ' + (error.error || 'Неизвестная ошибка'));
+    });
 }
 
 // Сохранение пользовательских настроек

@@ -33,12 +33,12 @@ def fill():
 
     # Добавление книг
     books = [
-        ("Война и мир", "isbn1", "1869", 10, 1500.50, 1, 1, "Эксмо"),
-        ("Преступление и наказание", "isbn2", "1866", 5, 1200.00, 2, 1, "АСТ"),
-        ("Вишнёвый сад", "isbn3", "1904", 8, 800.75, 3, 3, "Речь"),
+        ("Война и мир", "isbn1", "1869", 10, 1, 1, "Эксмо"),
+        ("Преступление и наказание", "isbn2", "1866", 5, 2, 1, "АСТ"),
+        ("Вишнёвый сад", "isbn3", "1904", 8, 3, 3, "Речь"),
     ]
     cursor.executemany(
-        "INSERT INTO book (name, isbn, year, quantity, price, author_id, genre_id, publishing_house) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO book (name, isbn, year, quantity, author_id, genre_id, publishing_house) VALUES (?, ?, ?, ?, ?, ?, ?)",
         books
     )
 
@@ -55,8 +55,8 @@ def fill():
 
     # Добавление читателей
     readers = [
-        ("Алексей", "Сидоров", "Алексеевич", "1990-05-15", "+7 (123) 456-7890"),
-        ("Мария", "Кузнецова", "Сергеевна", "1985-08-20", "+7 (987) 654-3210"),
+        ("Алексей", "Сидоров", "Алексеевич", "1990-05-15", "71234567890"),
+        ("Мария", "Кузнецова", "Сергеевна", "1985-08-20", "79876543210"),
     ]
     cursor.executemany(
         "INSERT INTO reader (first_name, last_name, patronymic, date_birth, phone) VALUES (?, ?, ?, ?, ?)",
@@ -71,6 +71,13 @@ def fill():
     cursor.executemany(
         "INSERT INTO supplier (name, contact, contact_person) VALUES (?, ?, ?)",
         suppliers
+    )
+    
+    # Добавление системных настроек
+    system_settings = (14, 5, 10)
+    cursor.execute(
+        "INSERT INTO system_settings (standart_rental_period, max_books_per_reader, late_return_penalty) VALUES (?, ?, ?)",
+        system_settings
     )
 
     # Фиксация изменений и закрытие соединения
