@@ -66,6 +66,17 @@
     border-color: var(--primary);
 }
 
+.export-btn-pdf {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.export-btn-pdf:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
 /* Контейнеры для графиков */
 .charts-container {
     margin-top: 30px;

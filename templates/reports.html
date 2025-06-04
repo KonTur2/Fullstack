@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Отчеты | Твердый переплет</title>
-    <link rel="icon" href="../static/img/icon.png" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='img/icon.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../static/css/styles.css">
-    <link rel="stylesheet" href="../static/css/reports.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}">
 </head>
 <body>
     <div class="container">
@@ -20,20 +20,20 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="/" class="active"><i class="fas fa-tachometer-alt"></i>Главная</a></li>
+                    <li><a href="{{ url_for('index') }}"><i class="fas fa-tachometer-alt"></i>Главная</a></li>
 
-                    {% if role in ['Администратор', 'Библиотекарь'] %}
-                    <li><a href="/books"><i class="fas fa-book"></i>Каталог книг</a></li>
-                    <li><a href="/readers"><i class="fas fa-users"></i>Читатели</a></li>
-                    <li><a href="/transactions"><i class="fas fa-exchange-alt"></i>Выдачи/возвраты</a></li>
+                    {% if current_user.role in ['Администратор', 'Библиотекарь'] %}
+                    <li><a href="{{ url_for('books_page') }}"><i class="fas fa-book"></i>Каталог книг</a></li>
+                    <li><a href="{{ url_for('readers_page') }}"><i class="fas fa-users"></i>Читатели</a></li>
+                    <li><a href="{{ url_for('transactions_page') }}"><i class="fas fa-exchange-alt"></i>Выдачи/возвраты</a></li>
                     {% endif %}
 
-                    {% if role == 'Бухгалтер' or role == 'Администратор' %}
-                    <li><a href="/reports"><i class="fas fa-chart-bar"></i>Отчеты</a></li>
+                    {% if current_user.role == 'Бухгалтер' or current_user.role == 'Администратор' %}
+                    <li><a href="{{ url_for('reports_page') }}" class="active"><i class="fas fa-chart-bar"></i>Отчеты</a></li>
                     {% endif %}
 
-                    {% if role == 'Администратор' %}
-                    <li><a href="/settings"><i class="fas fa-cog"></i>Настройки</a></li>
+                    {% if current_user.role == 'Администратор' %}
+                    <li><a href="{{ url_for('settings_page') }}"><i class="fas fa-cog"></i>Настройки</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -90,19 +90,15 @@
                 </div>
 
                 <div class="export-options" id="export-options" style="display: none;">
-                    <span>Экспорт:</span>
-                    <button class="export-btn" onclick="exportReport('csv')">
-                        <i class="fas fa-file-csv"></i> CSV
-                    </button>
-                    <button class="export-btn" onclick="exportReport('excel')">
-                        <i class="fas fa-file-excel"></i> Excel
-                    </button>
-                    <button class="export-btn" onclick="exportReport('pdf')">
-                        <i class="fas fa-file-pdf"></i> PDF
-                    </button>
-                    <button class="export-btn" onclick="printReport()">
+                    <a href="#" id="download-report-btn" class="export-btn" style="display: none;" download>
+                        <i class="fas fa-file-word"></i> Скачать отчет (DOCX)
+                    </a>
+                    <a href="#" id="download-report-pdf-btn" class="export-btn export-btn-pdf" style="display: none;" download>
+                        <i class="fas fa-file-pdf"></i> Скачать отчет (PDF)
+                    </a>
+                    <!-- <button class="export-btn" onclick="exportReport('print')">
                         <i class="fas fa-print"></i> Печать
-                    </button>
+                    </button> -->
                 </div>
             </div>
 
@@ -113,9 +109,9 @@
                 </div>
             </div>
 
-            <!-- Графики (для некоторых отчетов) -->
+            <!-- Графики (для некоторых отчетов) - теперь не используются -->
             <div class="charts-container" id="charts-container" style="display: none;">
-                <h3>Визуализация данных</h3>
+                <!-- <h3>Визуализация данных</h3>
                 <div class="chart-row">
                     <div class="chart-container">
                         <canvas id="chart1"></canvas>
@@ -123,14 +119,14 @@
                     <div class="chart-container">
                         <canvas id="chart2"></canvas>
                     </div>
-                </div>
+                </div> -->
             </div>
         </main>
     </div>
 
-    <!-- Подключаем Chart.js для графиков -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../static/js/main.js"></script>
-    <script src="../static/js/reports.js"></script>
+    <!-- Подключаем Chart.js для графиков - теперь не используется -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/reports.js') }}"></script>
 </body>
 </html>

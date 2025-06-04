@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from flask_cors import CORS
 from functools import wraps
@@ -6,6 +6,16 @@ import sqlite3
 import os
 from instance.fill_db import fill
 from config import DB_PATH
+from reports.fill_reports import (
+    generate_books_by_authors_report,
+    generate_issued_returned_books_report,
+    generate_issued_books_report,
+    generate_books_by_genres_report,
+    generate_book_collection_report,
+    generate_new_books_report,
+    generate_debited_books_report,
+    convert_docx_to_pdf
+)
 
 app = Flask(__name__)
 app.secret_key = 'SECRET'
@@ -562,6 +572,53 @@ def get_book_by_identifier():
         return jsonify({"error": str(e)}), 500
 
 # Выдача книги
+@app.route('/api/reports/generate', methods=['POST'])
+@login_required
+def generate_report_api():
+    try:
+        data = request.get_json()
+        report_type = data.get('report_type')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        employee_id = current_user.id
+
+        report_path = None
+        if report_type == 'by-author':
+            report_path = generate_books_by_authors_report(employee_id)
+        elif report_type == 'issue-return':
+            if not start_date or not end_date:
+                return jsonify({"error": "Для отчета о выданных и возвращенных книгах необходим период."}), 400
+            report_path = generate_issued_returned_books_report(employee_id, start_date, end_date)
+        elif report_type == 'issued-books':
+            report_path = generate_issued_books_report(employee_id)
+        elif report_type == 'by-genre':
+            report_path = generate_books_by_genres_report(employee_id)
+        elif report_type == 'all-books':
+            report_path = generate_book_collection_report(employee_id)
+        elif report_type == 'new-arrivals':
+            if not start_date or not end_date:
+                return jsonify({"error": "Для отчета о новых поступлениях необходим период."}), 400
+            report_path = generate_new_books_report(employee_id, start_date, end_date)
+        elif report_type == 'write-off':
+            report_path = generate_debited_books_report(employee_id)
+        else:
+            return jsonify({"error": "Неизвестный тип отчета"}), 400
+
+        # Возвращаем относительный путь к файлу для скачивания
+        pdf_path = convert_docx_to_pdf(report_path, 'reports')
+        return jsonify({"success": True, "report_url": f"/reports_download/{os.path.basename(report_path)}", "report_pdf_url": f"/reports_download/{os.path.basename(pdf_path)}"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/reports_download/<filename>')
+@login_required
+def download_report(filename):
+    try:
+        return send_from_directory(os.path.join(app.root_path, 'reports'), filename, as_attachment=True)
+    except Exception as e:
+        return str(e), 500
+
 @app.route('/api/book/issue', methods=['POST'])
 def issue_book():
     try:
